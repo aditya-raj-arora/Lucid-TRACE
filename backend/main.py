@@ -43,7 +43,7 @@ async def analyze_video(background_tasks: BackgroundTasks,file: UploadFile = Fil
         shutil.copyfileobj(file.file, buffer)
     
     # Run the pipeline
-    frames = extract_frames(video_path, n_frames=12)
+    frames = extract_frames(video_path)
     scores = analyze_frames(frames)
     verdict = final_verdict(scores)
     background_tasks.add_task(cleanup_evidence, video_path, frames)
