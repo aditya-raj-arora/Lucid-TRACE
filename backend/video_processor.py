@@ -5,7 +5,7 @@ import random
 FRAME_DIR = "frames"
 os.makedirs(FRAME_DIR, exist_ok=True)
 
-def extract_frames(video_path, n_frames=8):
+def extract_frames(video_path, n_frames=12):
     cap = cv2.VideoCapture(video_path)
     total_frames = int(cap.get(cv2.CAP_PROP_FRAME_COUNT))
     

@@ -29,25 +29,32 @@ function App() {
   };
 
   return (
-    <div className="container">
-      <h1>Lucid TRACE</h1>
-      <p>Upload video evidence to verify authenticity</p>
+    <div className="container" style={{ display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", minHeight: "70vh", textAlign: "center" }}>
+      <h1>🔍 Lucid TRACE</h1>
+      <p>📹 Upload media evidence to verify authenticity</p>
       
-      <input 
-        type="file" 
-        accept="video/*" 
-        onChange={(e) => setVideo(e.target.files[0])} 
-      />
+      <div className="upload-wrapper">
+        <input 
+          type="file" 
+          id="file-upload" 
+          accept="video/*,image/*" 
+          onChange={(e) => setVideo(e.target.files[0])} 
+          style={{ display: 'none' }}
+        />
+        <label htmlFor="file-upload" className="custom-file-upload">
+          {video ? `📄 ${video.name}` : "📂 Choose Media File"}
+        </label>
+      </div>
       
       <button onClick={handleUpload} disabled={loading}>
-        {loading ? "Analyzing..." : "Analyze Video"}
+        {loading ? "⏳ Analyzing..." : "🚀 Analyze Evidence"}
       </button>
 
       {result && (
         <div className="result">
-          <p><b>Frames Analyzed:</b> {result.frames_analyzed}</p>
-          <p><b>AI Probability:</b> {result.ai_probability}%</p>
-          <p><b>Verdict:</b> {result.verdict}</p>
+          <p><b>🎞️ Frames Analyzed:</b> {result.frames_analyzed}</p>
+          <p><b>🤖 AI Probability:</b> {result.ai_probability}%</p>
+          <p><b>⚖️ Verdict:</b> {result.verdict}</p>
         </div>
       )}
     </div>
