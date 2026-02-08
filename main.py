@@ -4,6 +4,7 @@ import uuid
 import json
 import random
 import shutil
+import hashlib
 import requests
 import numpy as np
 from PIL import Image
@@ -83,6 +84,14 @@ def extract_images_from_media(file_path: str, output_dir=OUTPUT_DIR):
         return []
 
     return extracted_images
+
+def get_file_hash(file_path):
+    sha256_hash = hashlib.sha256()
+    with open(file_path, "rb") as f:
+        # Read file in chunks to avoid memory crash on large videos
+        for byte_block in iter(lambda: f.read(4096), b""):
+            sha256_hash.update(byte_block)
+    return sha256_hash.hexdigest()
 
 def check_frame_with_sightengine(image_path):
     """Sends image to API and returns AI probability score."""
@@ -174,6 +183,8 @@ def analyze_media(file_path):
         f"----------------------------------------\n"
         f"Risk Level    : {risk_level}\n"
         f"Final Verdict : {verdict}\n"
+        f"----------------------------------------\n"
+        f"Evidence Digital Fingerprint (SHA-256): {get_file_hash(file_path)}\n"
         f"========================================"
     )
     
