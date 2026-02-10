@@ -57,6 +57,9 @@ function App() {
     }
   };
 
+  const analysisData = result ? (Array.isArray(result) ? result[0] : result) : null;
+  const extraData = result && Array.isArray(result) ? result[1] : null;
+
   return (
     <div style={{ position: "relative", width: "100vw", height: "100vh", display: "flex", alignItems: "center", justifyContent: "center", overflow: "hidden" }}>
     <canvas ref={canvasRef} style={{ position: "absolute", top: 0, left: 0, width: "100%", height: "100%", zIndex: -1 }} />
@@ -81,11 +84,20 @@ function App() {
         {loading ? "⏳ Analyzing..." : "🚀 Analyze Evidence"}
       </button>
 
-      {result && (
+      {analysisData && (
         <div className="result">
-          <p><b>🎞️ Frames Analyzed:</b> {result.frames_analyzed}</p>
-          <p><b>🤖 AI Probability:</b> {result.ai_probability}%</p>
-          <p><b>⚖️ Verdict:</b> {result.verdict}</p>
+          <p><b>🎞️ Frames Analyzed:</b> {analysisData.frames_analyzed}</p>
+          <p><b>🤖 AI Image Probability:</b> {analysisData.details.ai_image_branch}%</p>
+          <p><b>🤖 Deepfake Probability:</b> {analysisData.details.deepfake_branch}%</p>
+          <p><b>⚖️ Verdict:</b> {analysisData.verdict}</p>
+          {extraData && (
+            <div style={{ marginTop: "15px", paddingTop: "15px", borderTop: "1px solid rgba(255,255,255,0.2)", textAlign: "left" }}>
+              {/* <p><b>📄 File:</b> {extraData.filename}</p> */}
+              <p><b>🛡️ Risk Level:</b> <span style={{ color: extraData.color_code, fontWeight: "bold" }}>{extraData.risk_level}</span></p>
+              <p><b>📊 Confidence:</b> {(extraData.confidence_avg).toFixed(1)}%</p>
+              {/* <p><b>🔑 Hash:</b> <span style={{ fontSize: "0.75em", fontFamily: "monospace", wordBreak: "break-all" }}>{extraData.file_hash}</span></p> */}
+            </div>
+          )}
         </div>
       )}
     </div>
