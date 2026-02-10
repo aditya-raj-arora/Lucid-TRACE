@@ -8,6 +8,8 @@ function App() {
   const [video, setVideo] = useState(null);
   const [result, setResult] = useState(null);
   const [loading, setLoading] = useState(false);
+  const [isDragging, setIsDragging] = useState(false);
+  const [showExternalReview, setShowExternalReview] = useState(false);
   const canvasRef = useRef(null);
 
   useEffect(() => {
@@ -44,6 +46,7 @@ function App() {
     
     setLoading(true);
     setResult(null);
+    setShowExternalReview(false);
     
     try {
       // Connects to your FastAPI backend
@@ -57,6 +60,26 @@ function App() {
     }
   };
 
+  const onDragOver = (e) => {
+    e.preventDefault();
+    setIsDragging(true);
+  };
+
+  const onDragLeave = (e) => {
+    e.preventDefault();
+    if (!e.currentTarget.contains(e.relatedTarget)) {
+      setIsDragging(false);
+    }
+  };
+
+  const onDrop = (e) => {
+    e.preventDefault();
+    setIsDragging(false);
+    if (e.dataTransfer.files && e.dataTransfer.files[0]) {
+      setVideo(e.dataTransfer.files[0]);
+    }
+  };
+
   const analysisData = result ? (Array.isArray(result) ? result[0] : result) : null;
   const extraData = result && Array.isArray(result) ? result[1] : null;
 
@@ -67,7 +90,18 @@ function App() {
       <h1><FontAwesomeIcon icon={faMagnifyingGlass} /> Lucid TRACE</h1>
       <p>📹 Upload media evidence to verify authenticity</p>
       
-      <div className="upload-wrapper">
+      <div 
+        className="upload-wrapper"
+        onDragOver={onDragOver}
+        onDragLeave={onDragLeave}
+        onDrop={onDrop}
+        style={{
+          border: isDragging ? "2px dashed #fff" : "2px dashed transparent",
+          borderRadius: "10px",
+          backgroundColor: isDragging ? "rgba(255,255,255,0.1)" : "transparent",
+          transition: "all 0.2s ease"
+        }}
+      >
         <input 
           type="file" 
           id="file-upload" 
@@ -76,11 +110,11 @@ function App() {
           style={{ display: 'none' }}
         />
         <label htmlFor="file-upload" className="custom-file-upload">
-          {video ? `📄 ${video.name}` : "📂 Choose Media File"}
+          {video ? `📄 ${video.name}` : (isDragging ? "⬇️ Drop File Here" : "📂 Upload Files")}
         </label>
       </div>
       
-      <button onClick={handleUpload} disabled={loading}>
+      <button className="analysis-button" onClick={handleUpload} disabled={loading}>
         {loading ? "⏳ Analyzing..." : "🚀 Analyze Evidence"}
       </button>
 
@@ -90,7 +124,12 @@ function App() {
           <p><b>🤖 AI Image Probability:</b> {analysisData.details.ai_image_branch}%</p>
           <p><b>🤖 Deepfake Probability:</b> {analysisData.details.deepfake_branch}%</p>
           <p><b>⚖️ Verdict:</b> {analysisData.verdict}</p>
-          {extraData && (
+          {extraData && !showExternalReview && (
+            <button className="external-review-button" onClick={() => setShowExternalReview(true)} style={{ marginTop: "15px" }}>
+              See External Analysis
+            </button>
+          )}
+          {extraData && showExternalReview && (
             <div style={{ marginTop: "15px", paddingTop: "15px", borderTop: "1px solid rgba(255,255,255,0.2)", textAlign: "left" }}>
               {/* <p><b>📄 File:</b> {extraData.filename}</p> */}
               <p><b>🛡️ Risk Level:</b> <span style={{ color: extraData.color_code, fontWeight: "bold" }}>{extraData.risk_level}</span></p>
