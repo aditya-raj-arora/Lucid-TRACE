@@ -1,1 +1,9 @@
 .env
+backend/ai_model_cache/
+backend/ai_model_cache/*
+
+backend/best_model.pth
+
+frontend/node_modules/
+frontend/build/
+frontend/node_modules/*
